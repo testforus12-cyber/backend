@@ -1014,11 +1014,13 @@ export const removeTiedUpVendor = async (req, res) => {
     // ═══════════════════════════════════════════════════════════
     console.log('🗑️ ═══════ DELETE VENDOR REQUEST ═══════');
     console.log('📦 req.body:', JSON.stringify(req.body, null, 2));
+    console.log('📥 req.params:', JSON.stringify(req.params, null, 2));
+    console.log('📤 req.query:', JSON.stringify(req.query, null, 2));
     console.log('👤 req.user:', req.user?._id || req.user?.id || 'undefined');
     console.log('👤 req.customer:', req.customer?._id || req.customer?.id || 'undefined');
     console.log('───────────────────────────────────────');
     
-    // Get data from body
+    // Get data from body (preserve original extraction)
     let { customerID, companyName, vendorId } = req.body || {};
     
     console.log('📋 Extracted from body:');
@@ -1026,6 +1028,19 @@ export const removeTiedUpVendor = async (req, res) => {
     console.log('  - companyName:', companyName);
     console.log('  - vendorId:', vendorId);
     
+    // === NEW: Accept id from URL param or query if not present in body ===
+    // (non-invasive: only adds fallback, does not change existing logic)
+    if (!vendorId) {
+      // prefer req.params.id (router: /delete-vendor/:id)
+      if (req.params && req.params.id) {
+        vendorId = req.params.id;
+        console.log('ℹ️ vendorId taken from req.params.id:', vendorId);
+      } else if (req.query && (req.query.vendorId || req.query.id)) {
+        vendorId = req.query.vendorId || req.query.id;
+        console.log('ℹ️ vendorId taken from req.query:', vendorId);
+      }
+    }
+
     // ═══════════════════════════════════════════════════════════
     // FALLBACK: Get customerID from auth middleware if not in body
     // ═══════════════════════════════════════════════════════════
@@ -1158,6 +1173,7 @@ export const removeTiedUpVendor = async (req, res) => {
     });
   }
 };
+
 
 export const savePckingList = async (req, res) => {
   try {

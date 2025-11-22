@@ -24,9 +24,12 @@ import wheelseyePricingRoute from "./routes/wheelseyePricingRoute.js";
 // ODA routes
 import odaRoute from "./routes/odaRoute.js";
 
+// ✅ NEW: Invoice charges routes (import at top)
+import invoiceChargesRoutes from './routes/invoiceChargesRoutes.js';
+
 dotenv.config({ path: './config.env' });
 
-const app = express();
+const app = express();  // ← Create app FIRST
 const PORT = process.env.PORT || 8000;
 
 // ───────────────────────── BOOT LOGS & HEALTH METRICS ───────────────────────
@@ -198,6 +201,9 @@ app.use("/api/freight-rate", freightRateRoute);
 app.use("/api/wheelseye", wheelseyePricingRoute);
 app.use("/api/oda", odaRoute);
 
+// ✅ NEW: Register invoice charges routes AFTER app is created
+app.use('/api/transporters', invoiceChargesRoutes);
+
 // Bulk upload stub
 app.post("/upload", async (req, res) => {
   const { records } = req.body;
@@ -228,6 +234,8 @@ const server = app.listen(PORT, () => {
   console.log("  - POST /api/vendor/wheelseye-pricing");
   console.log("  - POST /api/vendor/wheelseye-distance");
   console.log("  - GET  /api/wheelseye/pricing");
+  console.log("  - PATCH /api/transporters/:id/invoice-charges"); // ✅ NEW
+  console.log("  - GET  /api/transporters/:id/invoice-charges"); // ✅ NEW
   console.log(`==> Available at your primary URL after boot`);
 });
 

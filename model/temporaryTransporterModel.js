@@ -212,6 +212,12 @@ const temporaryTransporterModel = new mongoose.Schema(
         },
         priceChart: {},
       },
+      invoiceValueCharges: { // ← NEW FIELD ADDED
+      enabled: { type: Boolean, default: false },
+      percentage: { type: Number, min: 0, max: 100, default: 0 },
+      minimumAmount: { type: Number, min: 0, default: 0 },
+      description: { type: String, default: 'Invoice Value Handling Charges' },
+    },
   },
   { timestamps: true, strict: false }
 );
